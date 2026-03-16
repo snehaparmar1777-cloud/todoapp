@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html ng-app="todoApp">
+<head>
+    <title>Todo App - AngularJS</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>My Todo List ({{activeTodosCount()}} active remaining)</h1>
+        
+        <div class="input-section">
+            <input type="text" ng-model="newTodo" placeholder="Add a new todo..." ng-keypress="addTodo($event)">
+            <button ng-click="addTodo()" ng-disabled="!newTodo.trim()">Add</button>
+
+        </div>
+
+        <div class="controls-section">
+            <input type="text" ng-model="query" placeholder="🔍 Search todos...">
+            <div class="filter-buttons">
+                <button ng-class="{'active': statusFilter === 'all'}" ng-click="statusFilter = 'all'">All</button>
+                <button ng-class="{'active': statusFilter === 'active'}" ng-click="statusFilter = 'active'">Active</button>
+                <button ng-class="{'active': statusFilter === 'completed'}" ng-click="statusFilter = 'completed'">Completed</button>
+            </div>
+        </div>
+
+        <ul class="todo-list">
+            <li ng-repeat="todo in filteredTodos() track by $index" class="todo-item" ng-if="!editingIndex || editingIndex !== $parent.$index">
+                <input type="checkbox" ng-model="todo.completed">
+                <span ng-dblclick="editTodo($parent.$index)" ng-class="{'completed': todo.completed, 'editing-placeholder': editingIndex === $parent.$index}">
+                    {{todo.text}}
+                </span>
+                <button ng-click="removeTodo($parent.$index)" class="remove-btn">×</button>
+            </li>
+            <li ng-repeat="todo in filteredTodos() track by $index" class="todo-item editing" ng-if="editingIndex === $parent.$index">
+                <input type="checkbox" ng-model="todo.completed">
+                <input ng-model="editText" ng-keypress="handleEditKey($event, $parent.$index)">
+                <button ng-click="saveEdit($parent.$index)" class="edit-save-btn">✓</button>
+                <button ng-click="cancelEdit()" class="edit-cancel-btn">✕</button>
+            </li>
+        </ul>
+
+        <div class="action-buttons">
+            <button ng-click="clearCompleted()" ng-disabled="!todos.length || todos.every(function(t){return !t.completed})">Clear Completed</button>
+            <button ng-click="undoLast()" ng-disabled="!undoTodos.length" class="undo-btn">Undo</button>
+            <button ng-click="todos = []" class="danger-btn" ng-disabled="!todos.length">Clear All</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
